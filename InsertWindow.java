@@ -1,5 +1,5 @@
 public class InsertWindow extends PlayerWindow{
     InsertWindow(){
-        super("Insert", "Insert new player");
+        super("Inserir", "Inserir novo jogador");
     }
 }

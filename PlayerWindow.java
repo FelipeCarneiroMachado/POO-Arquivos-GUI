@@ -11,10 +11,10 @@ public class PlayerWindow extends JFrame {
 
         // Create components
         JLabel idLabel = new JLabel("ID:");
-        JLabel ageLabel = new JLabel("Age:");
-        JLabel nameLabel = new JLabel("Name:");
-        JLabel clubLabel = new JLabel("Club Name:");
-        JLabel nationalityLabel = new JLabel("Nationality:");
+        JLabel ageLabel = new JLabel("Idade:");
+        JLabel nameLabel = new JLabel("Nome:");
+        JLabel clubLabel = new JLabel("Nome do clube:");
+        JLabel nationalityLabel = new JLabel("Nacionalidade:");
 
         JTextField idTextField = new JTextField(20);
         JTextField ageTextField = new JTextField(20);
