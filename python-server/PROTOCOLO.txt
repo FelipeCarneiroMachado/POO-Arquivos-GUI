@@ -1,0 +1,17 @@
+Toda instrucao enviada pelo cliente deve ter 5 bytes, os quais correspondem a 1 char e um int de 4 bytes
+O primeiro sera o determinante da instrucao
+O segundo sera a quantidade de bytes enviada na segunda "remessa" para instrucoes com parametros
+Instrucoes sem parametros (ex. salvar) devem ter o segundo campo igual a 0
+Os inteiros devem estar em little endian (a ser revisado)
+Todos os players devem seguir o encoding especificado (a ser definido)
+
+
+Tabela de instrucoes
+    Carregamento de arquivo
+        L | len(filePath)|filePath
+    Insercao (update eh uma insercao)
+        I | len(player) | player
+    Salvamento
+        S | 0
+    Busca com parametros (query)
+        Q | len(param) | param 

@@ -16,23 +16,34 @@ class Server:
 
 
 
-    def run(self):
+    def run(self) -> None:
         self.socket.listen()
         while True:
             connection, address = self.socket.accept()
             threading.Thread(target = self.handleClient, args = (connection, address)).start()
+            print("Connected")
 
 
-    def handleClient(self, connection, address):
+    def handleClient(self, connection : socket.socket, address : tuple) -> None:
+        connected = True
+        while connected:
+            header : bytes = connection.recv(5)
+            if(header):
+                print(type(header), type(header[0]))
+                task = header[0].encode("ascii")
+                argLen = int.from_bytes(header[1:5], "little")   
+                print(task, argLen)                  
+            
+        connection.close()
+
+    def defineFunction(self, header : bytes) -> None:
         pass
 
 
 
-
-
-
 def main():
-    pass
+    server = Server(ADDR)
+    server.run()
 
 
 if __name__ == "__main__":
