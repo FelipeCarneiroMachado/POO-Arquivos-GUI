@@ -1,10 +1,11 @@
 import socket
 import threading
+import database
 
 PORT = 5050
 IP = socket.gethostbyname(socket.gethostname())
 ADDR = (IP, PORT)
-
+ERROR_NO_FILE_LOADED = b"ERROR: no file loaded."
 
 
 
@@ -25,14 +26,23 @@ class Server:
 
 
     def handleClient(self, connection : socket.socket, address : tuple) -> None:
+        print(threading.get_ident(), threading.get_native_id())
         connected = True
+        db : database.Database = None
         while connected:
             header : bytes = connection.recv(5)
             if(header):
-                print(type(header), type(header[0]))
-                task = header[0].encode("ascii")
+                task = chr(header[0])
                 argLen = int.from_bytes(header[1:5], "little")   
-                print(task, argLen)                  
+                print(task, argLen)     
+                arg = connection.recv(argLen).decode("ascii")
+                print(arg)
+                if(task == "L"):
+                    db = database.Database(arg)            
+                if(db == None):
+                    connection.send(b"E"+ len(ERROR_NO_FILE_LOADED).to_bytes(4, "little"))
+                    connection.send(ERROR_NO_FILE_LOADED)
+
             
         connection.close()
 

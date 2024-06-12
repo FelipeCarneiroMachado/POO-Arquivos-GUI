@@ -15,3 +15,9 @@ Tabela de instrucoes
         S | 0
     Busca com parametros (query)
         Q | len(param) | param 
+
+O servidor tambem responde com um header de 1 char e um int 4 bytes
+O char eh o tipo de resposta, o int o comprimento
+Tabela de resposta do servidor
+    Resposta de Erro
+        E | len(msg de erro) | msg de erro
