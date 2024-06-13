@@ -5,10 +5,12 @@
     #include<string.h>
     #include<stdio.h>
     #include<stdint.h>
+    #include<string.h>
     #include"player.h"
     #include"binFile.h"
     #include"index.h"
-    
-
-
+    #include"interface.h"
+    extern bool loadCsv(char *srcPath, char *localName);
+    extern bool insertDb(char *player, char* binName, char *indexName);
+    extern bool buildIndex(char *indexName, char *binName);
 #endif

@@ -152,7 +152,7 @@ bool checkPlayer(PLAYER* p, int numOfParameters, char** fields, char** values){
 PLAYER* parseLine(char *line){
     //A partir de uma linha do .csv, gera uma struct com as informacoes
     PLAYER* newPlayer = playerInit();
-    char iterChar, tempStr[64];
+    char iterChar, tempStr[128];
     int i = 0, j = 0;
     while((iterChar = line[i]) != ','){
         //loop para ler id
@@ -188,6 +188,7 @@ PLAYER* parseLine(char *line){
     }
     tempStr[j] = '\0';
     playerSetPais(newPlayer, tempStr);
+    //printf("dentro da funcao");
     j = 0; i++;
     memset(tempStr, 0, 64);
     while((iterChar = line[i]) != '\n' && iterChar != '\r'){
