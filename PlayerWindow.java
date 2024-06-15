@@ -3,8 +3,10 @@ import java.awt.*;
 import java.awt.event.*;
 
 public class PlayerWindow extends JFrame {
+    private PlayerDataListener listener;
 
-    public PlayerWindow(String action, String title) {
+    public PlayerWindow(String action, String title, PlayerDataListener listener1) {
+        this.listener = listener1;
 
         setTitle(title);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -25,11 +27,22 @@ public class PlayerWindow extends JFrame {
         JButton button = new JButton(action);
         button.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                // Implement search functionality here
-                // For now, just display a message
-                JOptionPane.showMessageDialog(null, "Not yet implemented");
+                String id = idTextField.getText().trim();
+                String age = ageTextField.getText().trim();
+                String name = nameTextField.getText().trim().toUpperCase();
+                String club = clubTextField.getText().trim().toUpperCase();
+                String nationality = nationalityTextField.getText().trim().toUpperCase();
+        
+                String playerInfo = String.format("%s,%s,%s,%s,%s", id, age, name, club, nationality);
+        
+                if (listener != null) {
+                    listener.onDataReady(playerInfo);
+                }
+        
+                dispose();
             }
         });
+        
 
         // Set layout manager
         setLayout(new GridBagLayout());
@@ -77,13 +90,5 @@ public class PlayerWindow extends JFrame {
         pack();
         setLocationRelativeTo(null);
         setVisible(true);
-    }
-
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-                new PlayerWindow("Example", "Example");
-            }
-        });
     }
 }

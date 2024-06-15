@@ -1,5 +1,5 @@
-public class SearchWindow extends PlayerWindow{
-    SearchWindow(){
-        super("Busca", "Buscar por jogador");
+public class SearchWindow extends PlayerWindow {
+    public SearchWindow(PlayerDataListener listener) {
+        super("Busca", "Buscar por jogador", listener);
     }
 }

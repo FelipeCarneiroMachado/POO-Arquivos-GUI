@@ -6,18 +6,47 @@ Os inteiros devem estar em little endian (a ser revisado)
 Todos os players devem seguir o encoding especificado (a ser definido)
 
 
-Tabela de instrucoes
+Tabela de instrucoes (atualizada)
     Carregamento de arquivo
         L | len(filePath)|filePath
     Insercao (update eh uma insercao)
         I | len(player) | player
+    #Remocao (remocao de um registro) -> NOVO
+        R | len(player) | player (string)
+    #Listagem dos jogadores presentes no arquivo indexado (Acess) -> NOVO
+        A | 0 (a listagem deve ser do arquivo já carregado. Caso não haja nenhum arquivo carregado, a gui bloqueará a chamada). Precisa que passe o path do arquivo??
     Salvamento
-        S | 0
+        S | 0 #Precisa que passe o path do arquivo?
     Busca com parametros (query)
         Q | len(param) | param 
 
+
 O servidor tambem responde com um header de 1 char e um int 4 bytes
 O char eh o tipo de resposta, o int o comprimento
+
 Tabela de resposta do servidor
     Resposta de Erro
         E | len(msg de erro) | msg de erro
+    (Q) Busca com parâmetros 
+        array de strings dos jogadores buscados (ou outro formato) para ser exibido na tela 
+    (A) Listagem do arquivo
+        array de strings dos jogadores presentes no arquivo (ou outro formato) para ser exibido na tela 
+
+Testes: #Recomendo para ver como as informações são publicadas
+- Rodar o Servidor.java
+- Rodar o GUI.java em outro terminal 
+
+Comentários e orientações para o servidor em Python:
+- Só leio o retorno em duas operações, listadas acima (Acho que não preisa de mais)
+- Se puder, se baseia no servidor em java pq o socket foi implementado usando ele como base:
+    - Achei que ficava mais fácil salvar os dados dos registros em um vetor de strings antes do envio e juntar no momento do envio, como disposto em "Servidor.java"
+    - Enviar os registros de retorno da busca e listagem como uma unica string, no qual os jogadores são separados por "|" (sem espaço) e seus campos por ",".
+    - Os campos nulos dos registros devem ser escritos como "NULL", assim como no trabalho
+    - Sempre envio os dados no seguinte formato para o servidor:
+
+                    char type = (char) in.readByte(); #Char
+                    int length = Integer.reverseBytes(in.readInt()); #Int little endian
+                    byte[] data = new byte[length]; #String com os dados (path do arquivo, parâmetros de busca, dados para inserção, nullo ou id para remoção)
+                    if (length >= 0) {
+                        in.readFully(data);
+                    }
