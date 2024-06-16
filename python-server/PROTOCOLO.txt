@@ -21,6 +21,12 @@ Tabela de instrucoes (atualizada)
         Q | len(param) | param 
 
 
+
+FORMATO DA QUERY (busca e remocao)
+<campo>:<valor>&<campo>:<valor>...
+Todos como string, caso id seja parametro de busca so eh necessario mandar ele
+
+
 O servidor tambem responde com um header de 1 char e um int 4 bytes
 O char eh o tipo de resposta, o int o comprimento
 
