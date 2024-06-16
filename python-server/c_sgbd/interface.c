@@ -128,14 +128,13 @@ void selectAll(FILE* fd, HEADER* h){
 }
 
 // Função para criar uma tabela a partir de um arquivo CSV
-void createTable(FILE* csv, FILE* bin){
-    if(csv == NULL || bin == NULL){
+void createTable(char* srcName, char* destName){
+    if(fopen(srcName, "rb") == NULL){
         printf("Falha no processamento do arquivo.\n");
-        return;       
+        return;
     }
-    csvToBin(csv, bin);
+    csvToBin(srcName, destName);
 }
-
 
 //Funcao de debug, printa em um arquivo de log a lista de registros
 void logList(FILE* bin, HEADER *h, char *name){

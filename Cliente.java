@@ -82,7 +82,7 @@ public class Cliente {
     //Teste do servidor
     public static void main(String[] args) {
         try {
-            Cliente client = new Cliente("127.0.0.1", 5555);
+            Cliente client = new Cliente("127.0.0.1", 5050);
             Scanner s = new Scanner(System.in);
             while (true) {
                 String text = s.nextLine();

@@ -7,7 +7,7 @@ IP = socket.gethostbyname(socket.gethostname())
 ADDR = (IP, PORT)
 ERROR_NO_FILE_LOADED = b"ERROR: no file loaded."
 
-
+intToBytes = lambda x : x.toBytes(4, "little")
 
 class Server:
     def __init__(self, address : tuple) -> None:
@@ -26,22 +26,28 @@ class Server:
 
 
     def handleClient(self, connection : socket.socket, address : tuple) -> None:
-        print(threading.get_ident(), threading.get_native_id())
         connected = True
         db : database.Database = None
         while connected:
             header : bytes = connection.recv(5)
             if(header):
-                task = chr(header[0])
-                argLen = int.from_bytes(header[1:5], "little")   
-                print(task, argLen)     
-                arg = connection.recv(argLen).decode("ascii")
-                print(arg)
-                if(task == "L"):
-                    db = database.Database(arg)            
-                if(db == None):
-                    connection.send(b"E"+ len(ERROR_NO_FILE_LOADED).to_bytes(4, "little"))
-                    connection.send(ERROR_NO_FILE_LOADED)
+                try:
+                    task = chr(header[0])
+                    argLen = int.from_bytes(header[1:5], "little")   
+                    print(task, argLen)     
+                    arg = connection.recv(argLen).decode("ascii")
+                    if task == "L":
+                        db = database.Database(arg)            
+                    if db == None:
+                        connection.send(b"E"+ len(ERROR_NO_FILE_LOADED).to_bytes(4, "little"))
+                        connection.send(ERROR_NO_FILE_LOADED)
+                    if task == "I":
+                        db.command("I", arg.encode("ascii"))
+                except database.dbException as e:
+                    connection.send(b"E" + len(str(e).encode("ascii")).to_bytes(4, "little"))
+                    connection.send(str(e).encode("ascii"))
+                else:
+                    connection.send(B"S" + intToBytes(0))
 
             
         connection.close()

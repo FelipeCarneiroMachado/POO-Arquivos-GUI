@@ -23,15 +23,20 @@ class FileHandler:
 
     def copyBin(self):
         if self.os == "linux":
-            os.popen("cp " + self.srcFilePath + " " + self.localFilePath)
+            proc = subprocess.Popen(["cp", self.srcFilePath, self.localFilePath], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            out, err = proc.communicate()
+            if err:
+                raise dbException(str(err))
         else:   
             os.popen("copy " + self.srcFilePath + " " + self.localFilePath)
     def close(self):
          os.remove(self.localFilePath)
+         os.remove(self.indexPath)
 
 
 
-
+class dbException(Exception):
+    pass
 
 
 class Database:
@@ -41,33 +46,51 @@ class Database:
         self.os = sys.platform
         self.csv = filePath.split(".")[-1] == "csv"
         if self.csv:
-            # 
-            proc = subprocess.Popen(["valgrind --track-origins=yes ./sgbd"], shell=True,stdin=subprocess.PIPE)
-            proc.communicate(b"1" + b" "+ self.fileHandler.srcFilePath.encode("ascii") + b" "
+            proc = subprocess.Popen(["./sgbd"], shell=True,stdin=subprocess.PIPE, 
+                                stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            out, err = proc.communicate(b"1" + b" "+ self.fileHandler.srcFilePath.encode("ascii") + b" "
                              + self.fileHandler.localFilePath.encode("ascii") + b"\n")
+            if out == b"Falha no processamento do arquivo.\n":
+                raise dbException("FIle could not be loaded")
+            if err:
+                print(err)
         else:
             self.fileHandler.copyBin()
         proc = subprocess.Popen(["./sgbd"], shell=True,stdin=subprocess.PIPE)
-        proc.communicate(b"4" + self.fileHandler.localFilePath.encode("ascii")
+        proc.communicate(b"4"+ b" " + self.fileHandler.localFilePath.encode("ascii")+ b" "
                          +self.fileHandler.indexPath.encode("ascii"))
         
 
         
+    
 
-    def command(self, command : str, param : str) -> str:
+    def insert(self, register : str) -> None:
+        proc = subprocess.Popen(["./sgbd"], shell=True,stdin=subprocess.PIPE, 
+                                stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        out, err = proc.communicate(b"6 "+ self.fileHandler.localFilePath.encode("ascii")+ b" "+
+                                     self.fileHandler.indexPath.encode("ascii") + b" 1\n" +
+                                     register.encode("ascii") + b"\n")
+        if out == b"Falha no processamento do arquivo.\n":
+                raise dbException("Error at insertion")
+        
+
+    def command(self, command : str, param : str) -> None:
         match command:
-             case "I":
-                    print(self.calls)
-                    self.calls += 1
-                    self.lib.insertDb(ctypes.c_char_p(param.encode("ascii")), 
-                                    ctypes.c_char_p(self.fileHandler.localFilePath.encode("ascii")),
-                                    ctypes.c_char_p(self.fileHandler.indexPath.encode("ascii")))
+            case "I":
+                self.insert(param)
+            
+
+
+            case _:
+                raise dbException("Command Not Recognized")
+
+                    
 
 
 
     def close(self):
         self.fileHandler.close()
 
-
-d = Database("/home/dont_close_update_tabs/Documents/Usp/poo/POO-Arquivos-GUI/srcFiles/dadoTeste.csv")
-#d.command("I", "123456,69,ANDRE,BAHIA,REMO")
+Database("bin1.bin")
+#d = Database("/home/dont_close_update_tabs/Documents/Usp/poo/POO-Arquivos-GUI/srcFiles/dadoTeste.csv")
+#d.command("I", "123456 69 \"ANDRE\" \"BAHIA\" \"REMO\"")

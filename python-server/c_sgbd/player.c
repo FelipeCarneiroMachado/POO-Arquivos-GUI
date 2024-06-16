@@ -150,7 +150,6 @@ bool checkPlayer(PLAYER* p, int numOfParameters, char** fields, char** values){
 
 
 PLAYER* parseLine(char *line){
-    printf("entra");
     //A partir de uma linha do .csv, gera uma struct com as informacoes
     PLAYER* newPlayer = playerInit();
     char iterChar = 0, tempStr[512];

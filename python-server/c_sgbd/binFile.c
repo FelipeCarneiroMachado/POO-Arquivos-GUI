@@ -51,37 +51,66 @@ void updateHeader(FILE *bin, HEADER* h){
     fwrite(&(h->nRem), 4, 1, bin);
 }
 
-
-//Converte o arquivo .csv para um binario, seguindo as especificacoes do trabalho
-void csvToBin(FILE *src, FILE* data){
-    int64_t offset = 25;   
-    int32_t nRegistros = 0;
-    setStatus(data, '0'); //Arquivo inconsistente nesse momento
+void csvToBin(char* srcFile, char* destFile){
+    uint64_t offset = 25;   
+    uint32_t nRegistros = 0;
+    FILE *src = fopen(srcFile, "r");
+    FILE *data =  initFile(destFile);
+    HEADER *h = extraiHeader(data);
+    setStatus(data, '0');
     fseek(data, offset, SEEK_SET);
-    PLAYER *player = NULL;
-    char tempstr[128] = {0}; 
-    fgets(tempstr, 128, src);
-    // memset(tempstr, 0, 128);
+    PLAYER *player;
+    char tempstr[100]; 
+    fgets(tempstr, 100, src);
+    memset(tempstr, 0, 100);
 
-    while(fgets(tempstr, 128, src) != NULL){ //itera pelo .csv
-        player = parseLine(tempstr); //obtem player a partir de linha
+    while(fgets(tempstr, 100, src) != NULL){ //itera pelo .csv
+        player = parseLine(tempstr);
         escreveRegistro(data, offset, player);
         offset += playerTamanho(player, true);
-        // memset(tempstr, 0, 512); //limpa o buffer
+        h->offset += playerTamanho(player, true);
+        h->nReg++;
+        memset(tempstr, 0, 100);
         playerFree(&player);
         nRegistros += 1;
     }
 
     setStatus(data, '1');
-    setNumDeRegistros(data, nRegistros);
-    setProxOffset(data, offset);
+    updateHeader(data, h);
     fclose(data);
     fclose(src);
 }
 
+//Converte o arquivo .csv para um binario, seguindo as especificacoes do trabalho
+// void csvToBin(FILE *src, FILE* data){
+//     int64_t offset = 25;   
+//     int32_t nRegistros = 0;
+//     setStatus(data, '0'); //Arquivo inconsistente nesse momento
+//     fseek(data, offset, SEEK_SET);
+//     PLAYER *player = NULL;
+//     char tempstr[128] = {0}; 
+//     fgets(tempstr, 128, src);
+//     // memset(tempstr, 0, 128);
+
+//     while(fgets(tempstr, 128, src) != NULL){ //itera pelo .csv
+//         player = parseLine(tempstr); //obtem player a partir de linha
+//         escreveRegistro(data, offset, player);
+//         offset += playerTamanho(player, true);
+//         // memset(tempstr, 0, 512); //limpa o buffer
+//         playerFree(&player);
+//         nRegistros += 1;
+//     }
+
+//     setStatus(data, '1');
+//     setNumDeRegistros(data, nRegistros);
+//     setProxOffset(data, offset);
+//     fclose(data);
+//     fclose(src);
+// }
+
 //Inicializa o cabecalho do arquivo
 FILE* initFile(char* filename){
-    FILE *data = fopen(filename, "wb");
+    FILE *data = fopen(filename, "w+b");
     int64_t temp8bytes;
     int32_t temp4bytes;
     int8_t tempByte = '1';
@@ -91,7 +120,7 @@ FILE* initFile(char* filename){
     temp8bytes = -1;
     fwrite(&temp8bytes, 8, 1, data);
     //Escreve o proximo offset disponivel
-    temp8bytes = 0;
+    temp8bytes = 25;
     fwrite(&temp8bytes, 8, 1, data);
     //Escreve o n de registros
     temp4bytes = 0;

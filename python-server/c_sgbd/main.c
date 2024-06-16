@@ -11,30 +11,19 @@ Arquivo main do projeto
 ================================================
 */
 int main(){
-	printf("comecou\n");
 	FILE *bin = NULL, *csv = NULL;
 	HEADER *header = NULL;
 	INDEX* index = NULL;
-	char commandBuffer[256];
+	char commandBuffer[1024];
 	char *src, *dest, *intBuffer, *indexName, **fields, **values;
 	int nOfQueries, nOfFields;
-	while (fgets(commandBuffer, 256, stdin) != NULL){
+	while (fgets(commandBuffer,1024, stdin) != NULL){
 		switch(commandBuffer[0]){
 			case '1':	//Criacao de tabela a partir de .csv (funcionalidade 1)	
-				printf("leu\n");
-				printf(commandBuffer);
 				strtok(commandBuffer, " ");
 				src = strtok(NULL, " ");
 				dest = strtok(NULL, "\n");
-				printf("n eh strtok\n");
-				csv = fopen(src, "r");
-				printf("initefile");
-				bin = initFile(dest);
-				printf(src);
-				createTable(csv, bin);
-				//fclose(csv);
-				//fclose(bin);
-				//binarioNaTela(dest);
+				createTable(src, dest);
 				break;
 			case '2':    //retornar todos os registros (funcionalidade 2)
 				strtok(commandBuffer, " ");
@@ -101,7 +90,7 @@ int main(){
 					break;
 				}
 				index = createIndex(bin, header, indexName);
-				binarioNaTela(indexName);
+				// binarioNaTela(indexName);
 				fclose(bin);
 				free(header);
 				indexFree(&index);
@@ -161,18 +150,18 @@ int main(){
 					break;
 				}
 				indexName = strtok(NULL, " ");
-				index = createIndex(bin, header, indexName);
+				index = loadIndex(indexName);
+				//index = createIndex(bin, header, indexName);
 				nOfQueries = atoi(strtok(NULL, "\n"));
 				for(int i = 0; i < nOfQueries; i++){
 					PLAYER *p = playerInput(commandBuffer);
+					playerPrint(p);
 					insert(bin, header, index, p);
 					playerFree(&p);
 				}
 				updateHeader(bin, header);
 				writeIndex(index, indexName);
 				fclose(bin);
-				binarioNaTela(src);
-				binarioNaTela(indexName);
 				free(header);
 				indexFree(&index);
 			default:

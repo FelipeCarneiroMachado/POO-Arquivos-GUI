@@ -19,7 +19,7 @@ Essecialmente, toda interacao com a base eh feita por este header
     //Os arrays devem ser pareados (campo[i] corresponde a valor[i])
     void selectWhere(FILE* fd, HEADER* h, int numOfParameters, char** fields, char** values); //Printa os registros que batem com as condicoes
     void delete(FILE* data, HEADER* h, INDEX* index, int numOfParameters, char** fields, char** values);
-    void createTable(FILE* csv, FILE* bin); //cria o binario a partir de um csv
+     void createTable(char* srcName, char* destName); //cria o binario a partir de um csv
     void insert(FILE* bin, HEADER* header, INDEX* index, PLAYER* p); //Insercao de registro
     INDEX* createIndex(FILE* bin, HEADER* h, char* indexName);//Craicao de indice a partir de binario
     void logList(FILE* bin, HEADER *h, char *name);//Funcao de debug
