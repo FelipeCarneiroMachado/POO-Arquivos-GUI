@@ -3,7 +3,7 @@ import threading
 import os
 import sys
 import ctypes
-
+import subprocess
 
 class FileHandler:
     def __init__(self, filePath : str) -> None:
@@ -39,21 +39,17 @@ class Database:
     def __init__(self, filePath : str) -> None:
         self.fileHandler = FileHandler(filePath)
         self.os = sys.platform
-        self.lib = ctypes.util.find_library("pyDB")
-        if self.os == "linux":
-                self.libPath = "./libpyDb.so"
-                self.lib = ctypes.CDLL(self.libPath)
-        else:
-                self.libPath = ".\\c_sgdb\\libpyDb.so"
-                self.lib = ctypes.CDLL(self.libPath)
         self.csv = filePath.split(".")[-1] == "csv"
         if self.csv:
-            self.lib.loadCsv(( self.fileHandler.srcFilePath).encode("ascii"),
-                                     (self.fileHandler.localFilePath).encode("ascii"))
+            # 
+            proc = subprocess.Popen(["valgrind --track-origins=yes ./sgbd"], shell=True,stdin=subprocess.PIPE)
+            proc.communicate(b"1" + b" "+ self.fileHandler.srcFilePath.encode("ascii") + b" "
+                             + self.fileHandler.localFilePath.encode("ascii") + b"\n")
         else:
             self.fileHandler.copyBin()
-        self.lib.buildIndex(self.fileHandler.indexPath.encode("ascii"),
-                            self.fileHandler.localFilePath.encode("ascii"))
+        proc = subprocess.Popen(["./sgbd"], shell=True,stdin=subprocess.PIPE)
+        proc.communicate(b"4" + self.fileHandler.localFilePath.encode("ascii")
+                         +self.fileHandler.indexPath.encode("ascii"))
         
 
         
@@ -74,5 +70,4 @@ class Database:
 
 
 d = Database("/home/dont_close_update_tabs/Documents/Usp/poo/POO-Arquivos-GUI/srcFiles/dadoTeste.csv")
-print("a")
-d.command("I", "123456,69,ANDRE,BAHIA,REMO")
+#d.command("I", "123456,69,ANDRE,BAHIA,REMO")

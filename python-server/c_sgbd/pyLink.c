@@ -69,7 +69,9 @@ PLAYER* playerFromString(char *src){
     return p;
 }
 
-bool loadCsv(char *srcPath, char *localName){
+bool loadCsv(char srcPath[],char localName[]){
+    printf("1");
+    ///printf(localName);
     FILE *srcCsv, *destBin;
     srcCsv = fopen(srcPath, "r");
     destBin = fopen(localName, "wb");
@@ -79,14 +81,14 @@ bool loadCsv(char *srcPath, char *localName){
 
 
 
-bool buildIndex(char *indexName, char *binName){
+bool buildIndex( char *indexName, char *binName){
     FILE *bin = fopen(binName, "rb");
     HEADER *h = extraiHeader(bin);
     createIndex(bin, h, indexName);
     fclose(bin);
 }
 
-bool insertDb(char *player, char* binName, char *indexName){
+bool insertDb( char *player, char* binName, char *indexName){
     PLAYER *p = parseLine(player);
     FILE *bin;
     bin = fopen(binName, "r+b");

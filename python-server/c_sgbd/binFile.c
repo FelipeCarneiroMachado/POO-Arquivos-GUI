@@ -56,20 +56,18 @@ void updateHeader(FILE *bin, HEADER* h){
 void csvToBin(FILE *src, FILE* data){
     int64_t offset = 25;   
     int32_t nRegistros = 0;
-
-
     setStatus(data, '0'); //Arquivo inconsistente nesse momento
     fseek(data, offset, SEEK_SET);
-    PLAYER *player;
-    char tempstr[100]; 
-    fgets(tempstr, 100, src);
-    memset(tempstr, 0, 100);
+    PLAYER *player = NULL;
+    char tempstr[128] = {0}; 
+    fgets(tempstr, 128, src);
+    // memset(tempstr, 0, 128);
 
-    while(fgets(tempstr, 100, src) != NULL){ //itera pelo .csv
+    while(fgets(tempstr, 128, src) != NULL){ //itera pelo .csv
         player = parseLine(tempstr); //obtem player a partir de linha
         escreveRegistro(data, offset, player);
         offset += playerTamanho(player, true);
-        memset(tempstr, 0, 100); //limpa o buffer
+        // memset(tempstr, 0, 512); //limpa o buffer
         playerFree(&player);
         nRegistros += 1;
     }

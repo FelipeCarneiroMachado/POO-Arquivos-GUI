@@ -11,6 +11,7 @@ Arquivo main do projeto
 ================================================
 */
 int main(){
+	printf("comecou\n");
 	FILE *bin = NULL, *csv = NULL;
 	HEADER *header = NULL;
 	INDEX* index = NULL;
@@ -20,15 +21,20 @@ int main(){
 	while (fgets(commandBuffer, 256, stdin) != NULL){
 		switch(commandBuffer[0]){
 			case '1':	//Criacao de tabela a partir de .csv (funcionalidade 1)	
+				printf("leu\n");
+				printf(commandBuffer);
 				strtok(commandBuffer, " ");
 				src = strtok(NULL, " ");
 				dest = strtok(NULL, "\n");
+				printf("n eh strtok\n");
 				csv = fopen(src, "r");
+				printf("initefile");
 				bin = initFile(dest);
+				printf(src);
 				createTable(csv, bin);
-				fclose(csv);
-				fclose(bin);
-				binarioNaTela(dest);
+				//fclose(csv);
+				//fclose(bin);
+				//binarioNaTela(dest);
 				break;
 			case '2':    //retornar todos os registros (funcionalidade 2)
 				strtok(commandBuffer, " ");

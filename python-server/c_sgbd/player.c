@@ -150,9 +150,10 @@ bool checkPlayer(PLAYER* p, int numOfParameters, char** fields, char** values){
 
 
 PLAYER* parseLine(char *line){
+    printf("entra");
     //A partir de uma linha do .csv, gera uma struct com as informacoes
     PLAYER* newPlayer = playerInit();
-    char iterChar, tempStr[128];
+    char iterChar = 0, tempStr[512];
     int i = 0, j = 0;
     while((iterChar = line[i]) != ','){
         //loop para ler id
@@ -162,7 +163,7 @@ PLAYER* parseLine(char *line){
     tempStr[j] = '\0';
     playerSetId(newPlayer, atoi(tempStr));
     j = 0; i++;
-    memset(tempStr, 0, 64);
+    memset(tempStr, 0, 512);
     while((iterChar = line[i]) != ','){
         //loop para ler idade
         tempStr[j++] = iterChar;
@@ -171,7 +172,7 @@ PLAYER* parseLine(char *line){
     tempStr[j] = '\0';
     playerSetIdade(newPlayer, atoi(tempStr));
     j = 0; i++;
-    memset(tempStr, 0, 64);
+    memset(tempStr, 0, 512);
     while((iterChar = line[i]) != ','){
         //loop para ler nome
         tempStr[j++] = iterChar;
@@ -180,7 +181,7 @@ PLAYER* parseLine(char *line){
     tempStr[j] = '\0';
     playerSetNome(newPlayer, tempStr);
     j = 0; i++;
-    memset(tempStr, 0, 64);
+    memset(tempStr, 0, 512);
     while((iterChar = line[i]) != ','){
         //loop para ler pais
         tempStr[j++] = iterChar;
@@ -190,11 +191,13 @@ PLAYER* parseLine(char *line){
     playerSetPais(newPlayer, tempStr);
     //printf("dentro da funcao");
     j = 0; i++;
-    memset(tempStr, 0, 64);
-    while((iterChar = line[i]) != '\n' && iterChar != '\r'){
+    memset(tempStr, 0, 512);
+    iterChar = line[i];
+    while(iterChar  != '\n' && iterChar != '\r'){
         //loop para ler clube
         tempStr[j++] = iterChar;
         i++;
+        iterChar = line[i];
     }
     tempStr[j] = '\0';
     playerSetClube(newPlayer, tempStr);
