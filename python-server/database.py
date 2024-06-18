@@ -50,16 +50,20 @@ class Database:
                                 stdout=subprocess.PIPE, stderr=subprocess.PIPE)
             out, err = proc.communicate(b"1" + b" "+ self.fileHandler.srcFilePath.encode("ascii") + b" "
                              + self.fileHandler.localFilePath.encode("ascii") + b"\n")
-            if out == b"Falha no processamento do arquivo.\n":
-                raise dbException("FIle could not be loaded")
+            if b"Falha no processamento do arquivo.\n" in out:
+                raise dbException("Error at loading")
             if err:
-                print(err)
+                raise dbException(str(err))
         else:
             self.fileHandler.copyBin()
-        proc = subprocess.Popen(["./sgbd"], shell=True,stdin=subprocess.PIPE)
-        proc.communicate(b"4"+ b" " + self.fileHandler.localFilePath.encode("ascii")+ b" "
+        proc = subprocess.Popen(["./sgbd"], shell=True,stdin=subprocess.PIPE, 
+                                stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        out, err = proc.communicate(b"4"+ b" " + self.fileHandler.localFilePath.encode("ascii")+ b" "
                          +self.fileHandler.indexPath.encode("ascii"))
-        
+        if b"Falha no processamento do arquivo.\n" in out:
+                raise dbException("Error at indexation")
+        if err:
+            raise dbException(str(err))
 
         
     
@@ -70,7 +74,7 @@ class Database:
         out, err = proc.communicate(b"6 "+ self.fileHandler.localFilePath.encode("ascii")+ b" "+
                                      self.fileHandler.indexPath.encode("ascii") + b" 1\n" +
                                      register.encode("ascii") + b"\n")
-        if out == b"Falha no processamento do arquivo.\n":
+        if b"Falha no processamento do arquivo.\n" in out:
                 raise dbException("Error at insertion")
         if err:
             raise dbException(str(err))
@@ -78,7 +82,7 @@ class Database:
 
 
 
-    def query(self, query : dict) -> None:
+    def query(self, query : dict) -> bytes:
         s = f"{len(query.keys())}"
         for k, v in query.items():
             s += " "
@@ -92,27 +96,37 @@ class Database:
         out, err = proc.communicate(b"3 " +  self.fileHandler.localFilePath.encode("ascii")+ b" "+
                                      self.fileHandler.indexPath.encode("ascii") + b" 1\n" +
                                      s.encode("ascii"))
-        print(out)
-        print(err)
+        if b"Falha no processamento do arquivo.\n" in out:
+            raise dbException("Error at querying")
+        if err:
+            raise dbException(str(err))
+        return out.rstrip(b"|")
     
 
     def decodeQuery(query : str) -> dict:
         return {val[0] : val[1] for val in map(lambda x: x.split(":"), query.split("&"))}
 
-    def command(self, command : str, param : str) -> str | None:
+    def command(self, command : str, param : str = None) -> bytes | None:
         match command:
             case "I":
                 self.insert(param)
             case "Q":
-                pass
-
-
+                return self.query(self.decodeQuery(param))
+            case "A":
+                return self.returnAll()
             case _:
                 raise dbException("Command Not Recognized")
 
                     
-
-
+    def returnAll(self) -> bytes:
+        proc = subprocess.Popen(["./sgbd"], shell=True,stdin=subprocess.PIPE, 
+                                stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        out, err = proc.communicate(b"2 " + self.fileHandler.localFilePath.encode("ascii") + b"\n")
+        if b"Falha no processamento do arquivo.\n" in out:
+            raise dbException("Error at querying")
+        if err:
+            raise dbException(str(err))
+        return out.rstrip(b"|")
 
     def close(self):
         self.fileHandler.close()
@@ -121,6 +135,6 @@ class Database:
         
 
 
-Database("bin1.bin").query(Database.decodeQuery("id:209658"))
+
 #d = Database("/home/dont_close_update_tabs/Documents/Usp/poo/POO-Arquivos-GUI/srcFiles/dadoTeste.csv")
 #d.command("I", "123456 69 \"ANDRE\" \"BAHIA\" \"REMO\"")

@@ -14,9 +14,10 @@ Tabela de instrucoes (atualizada)
     #Remocao (remocao de um registro) -> NOVO
         R | len(player) | player (string)
     #Listagem dos jogadores presentes no arquivo indexado (Acess) -> NOVO
-        A | 0 (a listagem deve ser do arquivo já carregado. Caso não haja nenhum arquivo carregado, a gui bloqueará a chamada). Precisa que passe o path do arquivo??
+        A | 0 (a listagem deve ser do arquivo já carregado. Caso não haja nenhum arquivo carregado, a gui bloqueará a chamada). Precisa que passe o path do arquivo?? 
+        Resp: N, cada sessao tem 
     Salvamento
-        S | 0 #Precisa que passe o path do arquivo?
+        S | 0 #Precisa que passe o path do arquivo? (Nao, ja ta salvo, a n ser q queira que salve em outro arquivo)
     Busca com parametros (query)
         Q | len(param) | param 
 

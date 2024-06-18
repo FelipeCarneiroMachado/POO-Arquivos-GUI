@@ -8,7 +8,7 @@ Arquivo fonte da interface
 //Printa os registros que batem com as condicoes
 //Recebe 2 arrays de strings, 1 com os campos a serem comparados e outro com os valores
 //Os arrays devem ser pareados (campo[i] corresponde a valor[i])
-void selectWhere(FILE* fd, HEADER* h, int numOfParameters, char** fields, char** values){
+void selectWhere(FILE* fd, HEADER* h, INDEX* index,int numOfParameters, char** fields, char** values){
     if(h->status == '0'){
         printf("Falha no processamento do arquivo.\n");
         return;
@@ -21,6 +21,16 @@ void selectWhere(FILE* fd, HEADER* h, int numOfParameters, char** fields, char**
             searchForId = true;
             id = atoi(values[i]);
         }
+        
+    if(searchForId){
+        offset = indexSearch(index, id);
+        if(offset == -1)
+            return;
+        PLAYER *p = playerFromBin(fd, offset);
+        playerPrint(p);
+        playerFree(&p);
+        return;
+    }
     while(h->offset > offset){ //Itera sobre o arquivo
         PLAYER *p = playerFromBin(fd, NO_SEEK);
         if(checkPlayer(p, numOfParameters, fields, values)){

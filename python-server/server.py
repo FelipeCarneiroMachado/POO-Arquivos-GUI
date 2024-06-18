@@ -2,12 +2,12 @@ import socket
 import threading
 import database
 
-PORT = 5050
+PORT = 5056
 IP = socket.gethostbyname(socket.gethostname())
 ADDR = (IP, PORT)
 ERROR_NO_FILE_LOADED = b"ERROR: no file loaded."
 
-intToBytes = lambda x : x.toBytes(4, "little")
+intToBytes = lambda x : x.to_bytes(4, "little")
 
 class Server:
     def __init__(self, address : tuple) -> None:
@@ -33,33 +33,38 @@ class Server:
             if(header):
                 try:
                     task = chr(header[0])
-                    argLen = int.from_bytes(header[1:5], "little")   
-                    print(task, argLen)     
+                    argLen = int.from_bytes(header[1:5], "little")       
                     arg = connection.recv(argLen).decode("ascii")
+                    print(task, arg)
                     if task == "L":
-                        db = database.Database(arg)            
+                        db = database.Database(arg)
+                        connection.send(B"S" + intToBytes(0))
+                        continue     
                     if db == None:
                         connection.send(b"E"+ len(ERROR_NO_FILE_LOADED).to_bytes(4, "little"))
                         connection.send(ERROR_NO_FILE_LOADED)
-                    if task == "I":
-                        db.command("I", arg.encode("ascii"))
+                    out = db.command(task, arg)
                 except database.dbException as e:
                     connection.send(b"E" + len(str(e).encode("ascii")).to_bytes(4, "little"))
                     connection.send(str(e).encode("ascii"))
                 else:
+                    if out:
+                        connection.send(B"A" + len(out).to_bytes(4, "little") + out)    
                     connection.send(B"S" + intToBytes(0))
 
             
         connection.close()
 
-    def defineFunction(self, header : bytes) -> None:
-        pass
 
 
 
 def main():
-    server = Server(ADDR)
-    server.run()
+    try:
+        server = Server(ADDR)
+        server.run()
+    except Exception as e:
+        server.socket.close()
+        raise e
 
 
 if __name__ == "__main__":

@@ -3,7 +3,7 @@ import threading
 
 
 
-PORT = 5050
+PORT = 5056
 IP = socket.gethostbyname(socket.gethostname())
 ADDR = (IP, PORT)
 
@@ -11,8 +11,17 @@ ADDR = (IP, PORT)
 
 client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 path = "/home/dont_close_update_tabs/Documents/Usp/poo/POO-Arquivos-GUI/python-server/server.py"
-msg = b"I" + len(path).to_bytes(4, "little")
+
+
+msg = b"L" + len(path).to_bytes(4, "little")
 client.connect(ADDR)
+while True:
+    s = input().encode("ascii")
+    client.send(s[:1] + len(s[2:]).to_bytes(4, "little") + s[2:])
+    ret = client.recv(5)
+    print(chr(ret[0])+" " + client.recv(int.from_bytes(ret[1:5], "little")).decode("ascii"))
+
+
 client.send(msg)
 client.send(path.encode("ascii"))
 buf = client.recv(5)

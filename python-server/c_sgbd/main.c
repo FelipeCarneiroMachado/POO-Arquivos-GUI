@@ -32,12 +32,12 @@ int main(){
 					printf("Falha no processamento do arquivo.\n");
 					break;
 				}
+				header = extraiHeader(bin);
 				if(header->status == '0'){
 					printf("Falha no processamento do arquivo.\n");
 					fclose(bin);
 					break;
 				}
-				header = extraiHeader(bin);
 				selectAll(bin, header);
 				fclose(bin);
 				free(header);
@@ -49,17 +49,19 @@ int main(){
 					printf("Falha no processamento do arquivo.\n");
 					break;
 				}
+				header = extraiHeader(bin);
 				if(header->status == '0'){
 					printf("Falha no processamento do arquivo.\n");
 					fclose(bin);
 					break;
 				}
-				header = extraiHeader(bin);
+				indexName = strtok(NULL, " ");
+				index = createIndex(bin, header, indexName);
 				nOfQueries = atoi(strtok(NULL, "\n"));
 				fields = stringArray(5, 32);
 				values = stringArray(5, 32);
 				for(int i = 0; i < nOfQueries; i++){
-					printf("Busca %d\n\n", i + 1);
+					//printf("Busca %d\n\n", i + 1);
 					scanf("%d", &nOfFields);
 					for(int j = 0; j < nOfFields; j++){
 						scanf("%s", fields[j]);
@@ -68,12 +70,13 @@ int main(){
 						else
 							scanf("%s", values[j]);
 					}
-					selectWhere(bin, header, nOfFields, fields, values);
+					selectWhere(bin, header, index, nOfFields, fields, values);
 				}
 				freeStringArray(&fields, 5);
 				freeStringArray(&values, 5);
 				fclose(bin);
 				free(header);
+				break;
 			case '4':
 				strtok(commandBuffer, " ");
 				src = strtok(NULL, " ");

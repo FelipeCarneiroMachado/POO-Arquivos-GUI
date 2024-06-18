@@ -1,3 +1,4 @@
+#include<string.h>
 #include"player.h"
 #define NO_SEEK -1
 /*
@@ -81,18 +82,32 @@ int playerTamanho(PLAYER* p, bool set){
     return size;
 }
 void playerPrint(PLAYER *p){
+    char buffer[1024], *ptr;
+    ptr = buffer;
+    sprintf(ptr, "%d,", p->id);
+    ptr += strlen(ptr);
+    if(p->idade != -1)
+        sprintf(ptr,"%d,", p->idade);
+    else
+        sprintf(ptr, "NULO,");
+    ptr += strlen(ptr);
     if(p->nome != NULL)
-        printf("Nome do Jogador: %s\n", p->nome);
+        sprintf(ptr,"%s,", p->nome);
     else
-        printf("Nome do Jogador: SEM DADO\n");
+        sprintf(ptr, "NULO,");
+    ptr += strlen(ptr);
     if(p->pais != NULL)
-        printf("Nacionalidade do Jogador: %s\n", p->pais);
+        sprintf(ptr,"%s,", p->pais);
     else
-        printf("Nacionalidade do Jogador: SEM DADO\n");
+        sprintf(ptr, "NULO,");
+    ptr += strlen(ptr);
     if(p->clube != NULL)
-        printf("Clube do Jogador: %s\n\n", p->clube);
+        sprintf(ptr,"%s", p->clube);
     else
-        printf("Clube do Jogador: SEM DADO\n\n");
+        sprintf(ptr, "NULO");
+    ptr += strlen(ptr);
+    sprintf(ptr, "|");
+    printf(buffer);
     }
 
 void playerFree(PLAYER** p){
