@@ -4,6 +4,10 @@ import os
 import sys
 import ctypes
 import subprocess
+import logging
+
+log = logging.getLogger(__name__)
+logging.basicConfig(filename="serverLog.log", level=logging.DEBUG)
 
 class FileHandler:
     def __init__(self, filePath : str) -> None:
@@ -40,7 +44,6 @@ class dbException(Exception):
 
 
 class Database:
-    calls = 0
     def __init__(self, filePath : str) -> None:
         self.fileHandler = FileHandler(filePath)
         self.os = sys.platform
@@ -69,6 +72,10 @@ class Database:
     
 
     def insert(self, register : str) -> None:
+        logStr = (b"6 "+ self.fileHandler.localFilePath.encode("ascii")+ b" "+
+                                     self.fileHandler.indexPath.encode("ascii") + b" 1\n" +
+                                     register.encode("ascii") + b"\n")
+        log.debug(f"Insertion command: {logStr}")
         proc = subprocess.Popen(["./sgbd"], shell=True,stdin=subprocess.PIPE, 
                                 stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         out, err = proc.communicate(b"6 "+ self.fileHandler.localFilePath.encode("ascii")+ b" "+
@@ -103,13 +110,15 @@ class Database:
         return out.rstrip(b"|")
     
 
-    def decodeQuery(query : str) -> dict:
+    def decodeQuery(self, query : str) -> dict:
         return {val[0] : val[1] for val in map(lambda x: x.split(":"), query.split("&"))}
 
     def command(self, command : str, param : str = None) -> bytes | None:
+        log.debug(f"Executing: {command} {param}")
         match command:
             case "I":
                 self.insert(param)
+                return None
             case "Q":
                 return self.query(self.decodeQuery(param))
             case "A":
