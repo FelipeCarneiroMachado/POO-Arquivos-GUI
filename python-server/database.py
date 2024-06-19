@@ -6,13 +6,16 @@ import ctypes
 import subprocess
 import logging
 
+#setup do logger
 log = logging.getLogger(__name__)
 logging.basicConfig(filename="serverLog.log", level=logging.DEBUG)
 
+#classe que gerencia nome de arquivos e caminhos
 class FileHandler:
     def __init__(self, filePath : str) -> None:
         self.srcFilePath = filePath
         self.os = sys.platform
+        self.csv = filePath.split(".")[-1] == "csv"
         if self.os == "linux":
             self.localFilePath = "./env/bin" + str(threading.get_ident())
             
@@ -38,7 +41,7 @@ class FileHandler:
          os.remove(self.indexPath)
 
 
-
+#exception para o banco de daods
 class dbException(Exception):
     pass
 
@@ -86,7 +89,17 @@ class Database:
         if err:
             raise dbException(str(err))
         
-
+    def save(self) -> None:
+        if self.csv:
+            with open(self.fileHandler.srcFilePath, "w") as originFile :
+                originFile.write("id,idade,nomeJogador,nacionalidade,nomeClube\n" +
+                    self.returnAll().decode("ascii").replace("|", "\n"))
+        else:
+            proc = subprocess.Popen(["cp", self.fileHandler.localFilePath, self.fileHandler.srcFilePath], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            out, err = proc.communicate()
+            if err:
+                raise dbException(str(err))
+        
 
 
     def query(self, query : dict) -> bytes:
@@ -123,10 +136,34 @@ class Database:
                 return self.query(self.decodeQuery(param))
             case "A":
                 return self.returnAll()
+            case "R":
+                self.remove(self.decodeQuery(param))
+            case "S":
+                self.save()
             case _:
                 raise dbException("Command Not Recognized")
 
-                    
+
+
+    def remove(self, query : dict) -> None:
+        s = f"{len(query.keys())}"
+        for k, v in query.items():
+            s += " "
+            if k.startswith("id"):
+                s += f"{k} {v}"
+            else:
+                s += f"{k} \"{v}\""
+        s += "\n"
+        proc = subprocess.Popen(["./sgbd"], shell=True,stdin=subprocess.PIPE, 
+                                stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        out, err = proc.communicate(b"5 " +  self.fileHandler.localFilePath.encode("ascii")+ b" "+
+                                     self.fileHandler.indexPath.encode("ascii") + b" 1\n" +
+                                     s.encode("ascii"))
+        if b"Falha no processamento do arquivo.\n" in out:
+            raise dbException("Error at removing")
+        if err:
+            raise dbException(str(err))
+
     def returnAll(self) -> bytes:
         proc = subprocess.Popen(["./sgbd"], shell=True,stdin=subprocess.PIPE, 
                                 stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -142,8 +179,3 @@ class Database:
 
         
         
-
-
-
-#d = Database("/home/dont_close_update_tabs/Documents/Usp/poo/POO-Arquivos-GUI/srcFiles/dadoTeste.csv")
-#d.command("I", "123456 69 \"ANDRE\" \"BAHIA\" \"REMO\"")

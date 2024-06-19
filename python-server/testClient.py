@@ -3,7 +3,7 @@ import threading
 
 
 
-PORT = 5052
+PORT = 5053
 IP = socket.gethostbyname(socket.gethostname())
 ADDR = (IP, PORT)
 
