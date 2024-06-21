@@ -76,6 +76,7 @@ class Database:
     
 
     def insert(self, register : str) -> None:
+        self.remove(self.decodeQuery(register))
         logStr = (b"6 "+ self.fileHandler.localFilePath.encode("ascii")+ b" "+
                                      self.fileHandler.indexPath.encode("ascii") + b" 1\n" +
                                      register.encode("ascii") + b"\n")
@@ -124,7 +125,8 @@ class Database:
     
 
     def decodeQuery(self, query : str) -> dict:
-        return {val[0] : val[1] for val in map(lambda x: x.split(":"), query.split("&"))}
+        fieldList = ["id", "idade", "nomeJogador", "nacionalidade", "nomeClube"]
+        return {t[0]:t[1] for t in zip(fieldList, query.split(",")) if t[1] != ""}
 
     def command(self, command : str, param : str = None) -> str | None:
         log.debug(f"Executing: {command} {param}")
