@@ -157,8 +157,10 @@ int main(){
 				//index = createIndex(bin, header, indexName);
 				nOfQueries = atoi(strtok(NULL, "\n"));
 				for(int i = 0; i < nOfQueries; i++){
-					PLAYER *p = playerInput(commandBuffer);
-					playerPrint(p);
+					fgets(commandBuffer, 1024, stdin);
+					
+					PLAYER *p = parseLine(commandBuffer);
+					//playerPrint(p);
 					insert(bin, header, index, p);
 					playerFree(&p);
 				}

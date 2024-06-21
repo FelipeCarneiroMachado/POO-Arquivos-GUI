@@ -16,17 +16,38 @@ public class Cliente {
 
     //Outra oçõa aqui seria usar String
     private void sendInstruction(char type, byte[] data) throws IOException {
+        System.out.println(data.length);
         out.writeByte(type); // Escreve o tipo de instrução
-        out.writeInt(Integer.reverseBytes(data.length)); // Escreve o comprimento em little endian
+        out.writeInt(data.length); // Escreve o comprimento em little endian
         out.write(data); // Escreve os dados
         out.flush();
     }
 
+    // public String[] receiveResponse() throws IOException {
+    //     if (in != null && in.available() > 0) {  // Checa se 'in' não é nulo e se há dados disponíveis
+    //         System.out.println("Travou na soket");
+    //         String response = in.readUTF();      // Lê a resposta do servidor
+    //         System.out.println("Resposta do servidor: " + response);
+    //         return response.split("\\|");        // Retorna os dados separados por '|', sem contar espaços extras
+    //     } else {
+    //         System.out.println("Nenhum dado disponível para leitura ou stream é nulo.");
+    //     }
+    //     // Casos de erro
+    //     return new String[0];
+    // }
     public String[] receiveResponse() throws IOException {
         if (in != null && in.available() > 0) {  // Checa se 'in' não é nulo e se há dados disponíveis
-            String response = in.readUTF();      // Lê a resposta do servidor
-            System.out.println("Resposta do servidor: " + response);
-            return response.split("\\|");        // Retorna os dados separados por '|', sem contar espaços extras
+            System.out.println(in.readByte());
+            int length = in.readInt();           // Lê o comprimento da mensagem esperada
+            if (length > 0) {
+                byte[] data = new byte[length];
+                in.readFully(data);              // Lê os dados em bytes do servidor
+                String response = new String(data, StandardCharsets.UTF_8);  // Converte os bytes para string usando UTF-8
+                System.out.println("Resposta do servidor: " + response);
+                return response.split("\\|");    // Retorna os dados separados por '|', sem contar espaços extras
+            } else {
+                System.out.println("Resposta do servidor: comprimento de dados é 0.");
+            }
         } else {
             System.out.println("Nenhum dado disponível para leitura ou stream é nulo.");
         }

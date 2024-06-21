@@ -104,8 +104,8 @@ public class GUI extends JFrame {
                     if (filename != null) {
                         try {
                             client.sendAcessData(filename);
-                            Thread.sleep(500);
-
+                            Thread.sleep(2000);
+                            System.out.println("Ta aq");
                             //Recebe a resposta do servidor com TODOS os registros disponíveis
                             jogadores = client.receiveResponse();
                             

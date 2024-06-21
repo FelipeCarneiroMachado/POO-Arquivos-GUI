@@ -55,13 +55,15 @@ class Server:
             if self.killFlag:
                 break
             #recebe o header estipulado no protocolo
-            header : bytes = connection.recv(5)
+            header : bytes = connection.recv(1)
+            argLen : int = int.from_bytes(connection.recv(4), "big")
             #Caso haja uma mensagem
             if(header):
                 try:
                     #Decoding
                     task = chr(header[0])
-                    argLen = int.from_bytes(header[1:5], "little")       
+                    #   argLen = int.from_bytes(header[1:9], "little")
+                    log.debug(f"{header} {argLen}")       
                     arg = connection.recv(argLen).decode("ascii")
                     log.debug(f"Msg received : {task} {argLen} {arg}")
                     #Funcoes realizadas pelo servidor
@@ -75,7 +77,8 @@ class Server:
                     if task == "L":
                         log.info("Loading file")
                         db = database.Database(arg)
-                        connection.send(B"S" + intToBytes(0))
+                        log.debug("db not crashed")
+                        #connection.send(B"S" + intToBytes(0))
                         continue     
                     #Caso o banco de dados nao tenha sido iniciado
                     if db == None:
@@ -101,17 +104,22 @@ class Server:
                     socket.socket(socket.AF_INET, socket.SOCK_STREAM).connect(ADDR)
                 #Erros inesperados
                 except Exception as e:
-                    log.critical(f"Connection closed due to exception: {e}")
+                    log.critical(f"Connection closed due to exception: {e.__repr__()}")
                     connection.close()
                     raise e
                 #Caso base, sem erros
                 else:
                     #Output, retorno ao usuario
                     if out:
-                        connection.send(B"A" + len(out).to_bytes(4, "little") + out)    
+                        log.debug(f"Response sent: {out}")
+                        connection.send(b"A")
+                        connection.send(len(out).to_bytes(4 , "big"))
+                        connection.send(out)
+                        #log.debug(b"A" + len(out).to_bytes(8 , "big") +str(connection.send(out)))    
                     #Confirmacao de sucesso
                     else:
-                        connection.send(B"S" + intToBytes(0))
+                        pass
+                        #connection.send(B"S")
 
 
         #Fecha a conexao

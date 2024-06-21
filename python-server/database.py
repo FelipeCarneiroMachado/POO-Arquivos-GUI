@@ -66,6 +66,7 @@ class Database:
                                 stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         out, err = proc.communicate(b"4"+ b" " + self.fileHandler.localFilePath.encode("ascii")+ b" "
                          +self.fileHandler.indexPath.encode("ascii"))
+        log.debug("index morreu")
         if b"Falha no processamento do arquivo.\n" in out:
                 raise dbException("Error at indexation")
         if err:
@@ -95,10 +96,9 @@ class Database:
                 originFile.write("id,idade,nomeJogador,nacionalidade,nomeClube\n" +
                     self.returnAll().decode("ascii").replace("|", "\n"))
         else:
-            proc = subprocess.Popen(["cp", self.fileHandler.localFilePath, self.fileHandler.srcFilePath], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-            out, err = proc.communicate()
-            if err:
-                raise dbException(str(err))
+           with open(self.fileHandler.srcFilePath, "wb") as originFile, open(self.fileHandler.localFilePath, "rb") as curFile:
+                originFile.write(curFile.read())
+               
         
 
 
@@ -126,7 +126,7 @@ class Database:
     def decodeQuery(self, query : str) -> dict:
         return {val[0] : val[1] for val in map(lambda x: x.split(":"), query.split("&"))}
 
-    def command(self, command : str, param : str = None) -> bytes | None:
+    def command(self, command : str, param : str = None) -> str | None:
         log.debug(f"Executing: {command} {param}")
         match command:
             case "I":
