@@ -8,8 +8,8 @@ from time import sleep
 log = logging.getLogger(__name__)
 logging.basicConfig(filename="serverLog.log", level=logging.DEBUG)
 #iconstantes
-PORT = 5053
-IP = socket.gethostbyname(socket.gethostname())
+PORT = 5555
+IP = "127.0.0.1"
 ADDR = (IP, PORT)
 ERROR_NO_FILE_LOADED = b"ERROR: no file loaded."
 
@@ -63,7 +63,7 @@ class Server:
                     task = chr(header[0])
                     argLen = int.from_bytes(header[1:5], "little")       
                     arg = connection.recv(argLen).decode("ascii")
-                    log.debug(f"Msg received : {task} {arg}")
+                    log.debug(f"Msg received : {task} {argLen} {arg}")
                     #Funcoes realizadas pelo servidor
 
                     #Encerramento das atividades
