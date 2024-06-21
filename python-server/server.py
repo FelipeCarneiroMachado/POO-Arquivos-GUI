@@ -13,7 +13,7 @@ IP = "127.0.0.1"
 ADDR = (IP, PORT)
 ERROR_NO_FILE_LOADED = b"ERROR: no file loaded."
 
-
+log.info("\nStarting\n")
 
 #funcao auxiliar para converter inteiro literal em bytes
 intToBytes = lambda x : x.to_bytes(4, "little")
