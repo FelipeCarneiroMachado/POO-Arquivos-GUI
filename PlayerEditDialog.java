@@ -26,13 +26,13 @@ public class PlayerEditDialog extends JDialog {
         nameField = new JTextField(data[2]);
         add(nameField);
 
-        add(new JLabel("Clube:"));
-        clubField = new JTextField(data[3]);
-        add(clubField);
-
         add(new JLabel("Nacionalidade:"));
         nationalityField = new JTextField(data[4]);
         add(nationalityField);
+
+        add(new JLabel("Clube:"));
+        clubField = new JTextField(data[3]);
+        add(clubField);
 
         saveButton = new JButton("Salvar");
         saveButton.addActionListener(e -> {
@@ -41,8 +41,8 @@ public class PlayerEditDialog extends JDialog {
                         idField.getText(),  
                         ageField.getText(),
                         nameField.getText(),
-                        clubField.getText(),
-                        nationalityField.getText());
+                        nationalityField.getText(),
+                        clubField.getText());
                 listener.onPlayerEdit(playerInfo, 'U');  // Assume 'U' como update
             }
             dispose();

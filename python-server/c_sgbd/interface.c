@@ -31,6 +31,7 @@ void selectWhere(FILE* fd, HEADER* h, INDEX* index,int numOfParameters, char** f
         playerFree(&p);
         return;
     }
+    fseek(fd, 25, SEEK_SET);
     while(h->offset > offset){ //Itera sobre o arquivo
         PLAYER *p = playerFromBin(fd, NO_SEEK);
         if(checkPlayer(p, numOfParameters, fields, values)){

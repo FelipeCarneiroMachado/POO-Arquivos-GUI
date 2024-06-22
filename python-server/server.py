@@ -8,7 +8,7 @@ from time import sleep
 log = logging.getLogger(__name__)
 logging.basicConfig(filename="serverLog.log", level=logging.DEBUG)
 #iconstantes
-PORT = 5555
+PORT = 5550
 IP = "127.0.0.1"
 ADDR = (IP, PORT)
 ERROR_NO_FILE_LOADED = b"ERROR: no file loaded."
@@ -77,7 +77,6 @@ class Server:
                     if task == "L":
                         log.info("Loading file")
                         db = database.Database(arg)
-                        log.debug("db not crashed")
                         #connection.send(B"S" + intToBytes(0))
                         continue     
                     #Caso o banco de dados nao tenha sido iniciado

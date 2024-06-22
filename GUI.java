@@ -42,7 +42,7 @@ public class GUI extends JFrame {
 
         //Inicialização de um cliente por GUI
         try {
-            Cliente client = new Cliente("127.0.0.1", 5555);
+            Cliente client = new Cliente("127.0.0.1", 5550);
             System.out.println("Entrando com o cliente");
             GUI gui = this;
             filename = null;
@@ -58,7 +58,7 @@ public class GUI extends JFrame {
             fileSelectButton.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
                     JFileChooser fileChooser = new JFileChooser();
-                    FileNameExtensionFilter filter = new FileNameExtensionFilter("Binary files", "bin");
+                    FileNameExtensionFilter filter = new FileNameExtensionFilter("Binary files", "bin", "csv");
                     fileChooser.setFileFilter(filter);
 
                     if(fileChooser.showOpenDialog(gui) == JFileChooser.APPROVE_OPTION) {

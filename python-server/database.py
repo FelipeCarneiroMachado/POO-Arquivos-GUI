@@ -16,16 +16,16 @@ class FileHandler:
         self.srcFilePath = filePath
         self.os = sys.platform
         self.csv = filePath.split(".")[-1] == "csv"
+        subprocess.Popen(["make", "all"],stdout=subprocess.PIPE)
         if self.os == "linux":
             self.localFilePath = "./env/bin" + str(threading.get_ident())
-            
         else:
             self.localFilePath = ".\\env\\bin" + str(threading.get_ident())
         if self.os == "linux":
-            self.indexPath = "./env/index" + str(threading.get_ident())
-            
+            self.indexPath = "./env/index" + str(threading.get_ident())    
         else:
             self.indexPath = ".\\env\\index" + str(threading.get_ident())
+        
             
 
     def copyBin(self):
@@ -35,10 +35,14 @@ class FileHandler:
             if err:
                 raise dbException(str(err))
         else:   
-            os.popen("copy " + self.srcFilePath + " " + self.localFilePath)
+            proc = subprocess.Popen(["copy2", self.srcFilePath, self.localFilePath], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            out, err = proc.communicate()
+            if err:
+                raise dbException(str(err))
     def close(self):
          os.remove(self.localFilePath)
          os.remove(self.indexPath)
+         subprocess.Popen(["make", "clean"],stdout=subprocess.PIPE)
 
 
 #exception para o banco de daods
@@ -52,7 +56,7 @@ class Database:
         self.os = sys.platform
         self.csv = filePath.split(".")[-1] == "csv"
         if self.csv:
-            proc = subprocess.Popen(["./sgbd"], shell=True,stdin=subprocess.PIPE, 
+            proc = subprocess.Popen(["./sgbd"],stdin=subprocess.PIPE, 
                                 stdout=subprocess.PIPE, stderr=subprocess.PIPE)
             out, err = proc.communicate(b"1" + b" "+ self.fileHandler.srcFilePath.encode("ascii") + b" "
                              + self.fileHandler.localFilePath.encode("ascii") + b"\n")
@@ -62,7 +66,7 @@ class Database:
                 raise dbException(str(err))
         else:
             self.fileHandler.copyBin()
-        proc = subprocess.Popen(["./sgbd"], shell=True,stdin=subprocess.PIPE, 
+        proc = subprocess.Popen(["./sgbd"],stdin=subprocess.PIPE, 
                                 stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         out, err = proc.communicate(b"4"+ b" " + self.fileHandler.localFilePath.encode("ascii")+ b" "
                          +self.fileHandler.indexPath.encode("ascii"))
@@ -71,6 +75,7 @@ class Database:
                 raise dbException("Error at indexation")
         if err:
             raise dbException(str(err))
+        log.info("File and index setup completed sucessfully")
 
         
     
@@ -81,7 +86,7 @@ class Database:
                                      self.fileHandler.indexPath.encode("ascii") + b" 1\n" +
                                      register.encode("ascii") + b"\n")
         log.debug(f"Insertion command: {logStr}")
-        proc = subprocess.Popen(["./sgbd"], shell=True,stdin=subprocess.PIPE, 
+        proc = subprocess.Popen(["./sgbd"],stdin=subprocess.PIPE, 
                                 stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         out, err = proc.communicate(b"6 "+ self.fileHandler.localFilePath.encode("ascii")+ b" "+
                                      self.fileHandler.indexPath.encode("ascii") + b" 1\n" +
@@ -92,12 +97,14 @@ class Database:
             raise dbException(str(err))
         
     def save(self) -> None:
+        log.info("Files saved")
         if self.csv:
             with open(self.fileHandler.srcFilePath, "w") as originFile :
                 originFile.write("id,idade,nomeJogador,nacionalidade,nomeClube\n" +
                     self.returnAll().decode("ascii").replace("|", "\n"))
         else:
-           with open(self.fileHandler.srcFilePath, "wb") as originFile, open(self.fileHandler.localFilePath, "rb") as curFile:
+           with (open(self.fileHandler.srcFilePath, "wb") as originFile,
+                 open(self.fileHandler.localFilePath, "rb") as curFile):
                 originFile.write(curFile.read())
                
         
@@ -112,7 +119,10 @@ class Database:
             else:
                 s += f"{k} \"{v}\""
         s += "\n"
-        proc = subprocess.Popen(["./sgbd"], shell=True,stdin=subprocess.PIPE, 
+        log.debug(b"3 " +  self.fileHandler.localFilePath.encode("ascii")+ b" "+
+                                     self.fileHandler.indexPath.encode("ascii") + b" 1\n" +
+                                     s.encode("ascii"))
+        proc = subprocess.Popen(["./sgbd"],stdin=subprocess.PIPE, 
                                 stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         out, err = proc.communicate(b"3 " +  self.fileHandler.localFilePath.encode("ascii")+ b" "+
                                      self.fileHandler.indexPath.encode("ascii") + b" 1\n" +
@@ -156,7 +166,7 @@ class Database:
             else:
                 s += f"{k} \"{v}\""
         s += "\n"
-        proc = subprocess.Popen(["./sgbd"], shell=True,stdin=subprocess.PIPE, 
+        proc = subprocess.Popen(["./sgbd"],stdin=subprocess.PIPE, 
                                 stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         out, err = proc.communicate(b"5 " +  self.fileHandler.localFilePath.encode("ascii")+ b" "+
                                      self.fileHandler.indexPath.encode("ascii") + b" 1\n" +
@@ -167,7 +177,7 @@ class Database:
             raise dbException(str(err))
 
     def returnAll(self) -> bytes:
-        proc = subprocess.Popen(["./sgbd"], shell=True,stdin=subprocess.PIPE, 
+        proc = subprocess.Popen(["./sgbd"],stdin=subprocess.PIPE, 
                                 stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         out, err = proc.communicate(b"2 " + self.fileHandler.localFilePath.encode("ascii") + b"\n")
         if b"Falha no processamento do arquivo.\n" in out:
