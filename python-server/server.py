@@ -58,7 +58,7 @@ class Server:
             header : bytes = connection.recv(1)
             argLen : int = int.from_bytes(connection.recv(4), "big")
             #Caso haja uma mensagem
-            if(header):
+            if header:
                 try:
                     #Decoding
                     task = chr(header[0])
