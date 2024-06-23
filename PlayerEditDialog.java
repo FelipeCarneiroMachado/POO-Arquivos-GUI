@@ -2,7 +2,7 @@ import javax.swing.*;
 import java.awt.*;
 
 public class PlayerEditDialog extends JDialog {
-    private JTextField idField, ageField, nameField, clubField, nationalityField;
+    private JTextField idField, ageField, nameField, nationalityField, clubField;
     private JButton saveButton, deleteButton;
     private PlayerEditListener listener;
 
@@ -11,29 +11,29 @@ public class PlayerEditDialog extends JDialog {
         setLayout(new GridLayout(6, 2));
         setTitle("Editar Jogador");
         setSize(300, 200);
-
+    
         String[] data = playerData.split(",");
         add(new JLabel("ID:"));
         idField = new JTextField(data[0]);
         idField.setEditable(false);  
         add(idField);
-
+    
         add(new JLabel("Idade:"));
         ageField = new JTextField(data[1]);
         add(ageField);
-
+    
         add(new JLabel("Nome:"));
         nameField = new JTextField(data[2]);
         add(nameField);
-
+    
         add(new JLabel("Nacionalidade:"));
-        nationalityField = new JTextField(data[4]);
+        nationalityField = new JTextField(data[3]);
         add(nationalityField);
-
+    
         add(new JLabel("Clube:"));
-        clubField = new JTextField(data[3]);
+        clubField = new JTextField(data[4]);
         add(clubField);
-
+    
         saveButton = new JButton("Salvar");
         saveButton.addActionListener(e -> {
             if (listener != null) {
@@ -48,7 +48,7 @@ public class PlayerEditDialog extends JDialog {
             dispose();
         });
         add(saveButton);
-
+    
         deleteButton = new JButton("Excluir");
         deleteButton.addActionListener(e -> {
             if (listener != null) {
@@ -57,7 +57,8 @@ public class PlayerEditDialog extends JDialog {
             dispose();
         });
         add(deleteButton);
-
+    
         setVisible(true);
     }
+    
 }

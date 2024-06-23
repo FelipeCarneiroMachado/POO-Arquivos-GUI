@@ -42,7 +42,7 @@ public class GUI extends JFrame {
 
         //Inicialização de um cliente por GUI
         try {
-            Cliente client = new Cliente("127.0.0.1", 5550);
+            Cliente client = new Cliente("127.0.0.1", 5555);
             System.out.println("Entrando com o cliente");
             GUI gui = this;
             filename = null;

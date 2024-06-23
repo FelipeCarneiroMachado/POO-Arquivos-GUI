@@ -16,7 +16,7 @@ class FileHandler:
         self.srcFilePath = filePath
         self.os = sys.platform
         self.csv = filePath.split(".")[-1] == "csv"
-        subprocess.Popen(["make", "all"],stdout=subprocess.PIPE)
+        #subprocess.Popen(["make", "all"],stdout=subprocess.PIPE)
         if self.os == "linux":
             self.localFilePath = "./env/bin" + str(threading.get_ident())
         else:
@@ -42,7 +42,7 @@ class FileHandler:
     def close(self):
          os.remove(self.localFilePath)
          os.remove(self.indexPath)
-         subprocess.Popen(["make", "clean"],stdout=subprocess.PIPE)
+         #subprocess.Popen(["make", "clean"],stdout=subprocess.PIPE)
 
 
 #exception para o banco de daods

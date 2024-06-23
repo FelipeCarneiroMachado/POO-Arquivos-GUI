@@ -15,14 +15,14 @@ public class PlayerWindow extends JFrame {
         JLabel idLabel = new JLabel("ID:");
         JLabel ageLabel = new JLabel("Idade:");
         JLabel nameLabel = new JLabel("Nome:");
-        JLabel clubLabel = new JLabel("Nome do clube:");
         JLabel nationalityLabel = new JLabel("Nacionalidade:");
+        JLabel clubLabel = new JLabel("Nome do clube:");
 
         JTextField idTextField = new JTextField(20);
         JTextField ageTextField = new JTextField(20);
         JTextField nameTextField = new JTextField(20);
-        JTextField clubTextField = new JTextField(20);
         JTextField nationalityTextField = new JTextField(20);
+        JTextField clubTextField = new JTextField(20);
 
         JButton button = new JButton(action);
         button.addActionListener(new ActionListener() {
@@ -30,10 +30,10 @@ public class PlayerWindow extends JFrame {
                 String id = idTextField.getText().trim();
                 String age = ageTextField.getText().trim();
                 String name = nameTextField.getText().trim().toUpperCase();
-                String club = clubTextField.getText().trim().toUpperCase();
                 String nationality = nationalityTextField.getText().trim().toUpperCase();
+                String club = clubTextField.getText().trim().toUpperCase();
         
-                String playerInfo = String.format("%s,%s,%s,%s,%s", id, age, name, club, nationality);
+                String playerInfo = String.format("%s,%s,%s,%s,%s", id, age, name, nationality, club);
         
                 if (listener != null) {
                     listener.onDataReady(playerInfo);
@@ -69,16 +69,16 @@ public class PlayerWindow extends JFrame {
         add(nameTextField, gbc);
 
         gbc.gridx = 0;
-        gbc.gridy = 3;
-        add(clubLabel, gbc);
-        gbc.gridx = 1;
-        add(clubTextField, gbc);
-
-        gbc.gridx = 0;
         gbc.gridy = 4;
         add(nationalityLabel, gbc);
         gbc.gridx = 1;
         add(nationalityTextField, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy = 3;
+        add(clubLabel, gbc);
+        gbc.gridx = 1;
+        add(clubTextField, gbc);
 
         gbc.gridx = 0;
         gbc.gridy = 5;

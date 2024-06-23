@@ -8,7 +8,7 @@ from time import sleep
 log = logging.getLogger(__name__)
 logging.basicConfig(filename="serverLog.log", level=logging.DEBUG)
 #iconstantes
-PORT = 5550
+PORT = 5555
 IP = "127.0.0.1"
 ADDR = (IP, PORT)
 ERROR_NO_FILE_LOADED = b"ERROR: no file loaded."
