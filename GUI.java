@@ -1,9 +1,8 @@
-import javax.swing.*;
-import javax.swing.filechooser.FileNameExtensionFilter;
-
 import java.awt.*;
 import java.awt.event.*;
 import java.io.IOException;
+import javax.swing.*;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 
 public class GUI extends JFrame {
@@ -58,7 +57,7 @@ public class GUI extends JFrame {
             fileSelectButton.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
                     JFileChooser fileChooser = new JFileChooser();
-                    FileNameExtensionFilter filter = new FileNameExtensionFilter("Binary files", "bin", "csv");
+                    FileNameExtensionFilter filter = new FileNameExtensionFilter("bin or csv files", "bin", "csv");
                     fileChooser.setFileFilter(filter);
 
                     if(fileChooser.showOpenDialog(gui) == JFileChooser.APPROVE_OPTION) {
