@@ -8,7 +8,7 @@ import logging
 
 #setup do logger
 log = logging.getLogger(__name__)
-logging.basicConfig(filename="serverLog.log", level=logging.DEBUG)
+logging.basicConfig(filename="serverLog.log", level=logging.INFO)
 
 #classe que gerencia nome de arquivos e caminhos
 class FileHandler:

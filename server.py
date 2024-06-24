@@ -10,7 +10,7 @@ import subprocess
 
 #setup do log do servidor
 log = logging.getLogger(__name__)
-logging.basicConfig(filename="serverLog.log", level=logging.DEBUG)
+logging.basicConfig(filename="serverLog.log", level=logging.INFO)
 #constantes
 PORT = 5555
 IP = "127.0.0.1"
