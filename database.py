@@ -5,7 +5,8 @@ import sys
 import ctypes
 import subprocess
 import logging
-
+import glob
+from time import sleep
 #setup do logger
 log = logging.getLogger(__name__)
 logging.basicConfig(filename="serverLog.log", level=logging.DEBUG)
@@ -25,6 +26,14 @@ class FileHandler:
             self.indexPath = "./env/index" + str(threading.get_ident())    
         else:
             self.indexPath = ".\\env\\index" + str(threading.get_ident())
+        self.glob = glob.iglob(".")
+        if not "env" in self.glob:
+            subprocess.Popen(["mkdir", "env"], shell=True)
+        if self.os == "linux":
+            subprocess.Popen(["make", "all"], shell=True)
+        else:
+            pass
+        sleep(2)
         
             
 
@@ -54,9 +63,13 @@ class Database:
     def __init__(self, filePath : str) -> None:
         self.fileHandler = FileHandler(filePath)
         self.os = sys.platform
+        if self.os == "linux":
+            self.exe = "./sgbd"
+        else:
+            self.exe = "start sgbd"
         self.csv = filePath.split(".")[-1] == "csv"
         if self.csv:
-            proc = subprocess.Popen(["./sgbd"],stdin=subprocess.PIPE, shell=True,
+            proc = subprocess.Popen([self.exe],stdin=subprocess.PIPE, shell=True,
                                 stdout=subprocess.PIPE, stderr=subprocess.PIPE)
             out, err = proc.communicate(b"1" + b" "+ self.fileHandler.srcFilePath.encode("ascii") + b" "
                              + self.fileHandler.localFilePath.encode("ascii") + b"\n")
@@ -66,7 +79,7 @@ class Database:
                 raise dbException(str(err))
         else:
             self.fileHandler.copyBin()
-        proc = subprocess.Popen(["./sgbd"],stdin=subprocess.PIPE, shell=True,
+        proc = subprocess.Popen([self.exe],stdin=subprocess.PIPE, shell=True,
                                 stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         out, err = proc.communicate(b"4"+ b" " + self.fileHandler.localFilePath.encode("ascii")+ b" "
                          +self.fileHandler.indexPath.encode("ascii"))
@@ -86,7 +99,7 @@ class Database:
                                      self.fileHandler.indexPath.encode("ascii") + b" 1\n" +
                                      register.encode("ascii") + b"\n")
         log.debug(f"Insertion command: {logStr}")
-        proc = subprocess.Popen(["./sgbd"],stdin=subprocess.PIPE, 
+        proc = subprocess.Popen([self.exe],stdin=subprocess.PIPE, shell=True,
                                 stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         out, err = proc.communicate(b"6 "+ self.fileHandler.localFilePath.encode("ascii")+ b" "+
                                      self.fileHandler.indexPath.encode("ascii") + b" 1\n" +
@@ -122,7 +135,7 @@ class Database:
         log.debug(b"3 " +  self.fileHandler.localFilePath.encode("ascii")+ b" "+
                                      self.fileHandler.indexPath.encode("ascii") + b" 1\n" +
                                      s.encode("ascii"))
-        proc = subprocess.Popen(["./sgbd"],stdin=subprocess.PIPE, 
+        proc = subprocess.Popen([self.exe],stdin=subprocess.PIPE, shell=True,
                                 stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         out, err = proc.communicate(b"3 " +  self.fileHandler.localFilePath.encode("ascii")+ b" "+
                                      self.fileHandler.indexPath.encode("ascii") + b" 1\n" +
@@ -166,7 +179,7 @@ class Database:
             else:
                 s += f"{k} \"{v}\""
         s += "\n"
-        proc = subprocess.Popen(["./sgbd"],stdin=subprocess.PIPE, 
+        proc = subprocess.Popen([self.exe],stdin=subprocess.PIPE, shell=True,
                                 stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         out, err = proc.communicate(b"5 " +  self.fileHandler.localFilePath.encode("ascii")+ b" "+
                                      self.fileHandler.indexPath.encode("ascii") + b" 1\n" +
@@ -177,7 +190,7 @@ class Database:
             raise dbException(str(err))
 
     def returnAll(self) -> bytes:
-        proc = subprocess.Popen(["./sgbd"],stdin=subprocess.PIPE, 
+        proc = subprocess.Popen([self.exe],stdin=subprocess.PIPE, shell=True,
                                 stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         out, err = proc.communicate(b"2 " + self.fileHandler.localFilePath.encode("ascii") + b"\n")
         if b"Falha no processamento do arquivo.\n" in out:
