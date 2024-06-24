@@ -30,12 +30,12 @@ class FileHandler:
 
     def copyBin(self):
         if self.os == "linux":
-            proc = subprocess.Popen(["cp", self.srcFilePath, self.localFilePath], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            proc = subprocess.Popen(["cp", self.srcFilePath, self.localFilePath],shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
             out, err = proc.communicate()
             if err:
                 raise dbException(str(err))
         else:   
-            proc = subprocess.Popen(["copy2", self.srcFilePath, self.localFilePath], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            proc = subprocess.Popen(["copy", self.srcFilePath, self.localFilePath],shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
             out, err = proc.communicate()
             if err:
                 raise dbException(str(err))
@@ -56,7 +56,7 @@ class Database:
         self.os = sys.platform
         self.csv = filePath.split(".")[-1] == "csv"
         if self.csv:
-            proc = subprocess.Popen(["./sgbd"],stdin=subprocess.PIPE, 
+            proc = subprocess.Popen(["./sgbd"],stdin=subprocess.PIPE, shell=True,
                                 stdout=subprocess.PIPE, stderr=subprocess.PIPE)
             out, err = proc.communicate(b"1" + b" "+ self.fileHandler.srcFilePath.encode("ascii") + b" "
                              + self.fileHandler.localFilePath.encode("ascii") + b"\n")
@@ -66,7 +66,7 @@ class Database:
                 raise dbException(str(err))
         else:
             self.fileHandler.copyBin()
-        proc = subprocess.Popen(["./sgbd"],stdin=subprocess.PIPE, 
+        proc = subprocess.Popen(["./sgbd"],stdin=subprocess.PIPE, shell=True,
                                 stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         out, err = proc.communicate(b"4"+ b" " + self.fileHandler.localFilePath.encode("ascii")+ b" "
                          +self.fileHandler.indexPath.encode("ascii"))
