@@ -32,6 +32,8 @@ class FileHandler:
             subprocess.Popen(["make", "all"], shell=True)
         else:
             pass
+        log.debug(str(self.localFilePath))
+        log.debug(str(self.indexPath))
         sleep(2)
         
             
@@ -71,7 +73,7 @@ class Database:
             proc = subprocess.Popen([self.exe],stdin=subprocess.PIPE, shell=True,
                                 stdout=subprocess.PIPE, stderr=subprocess.PIPE)
             out, err = proc.communicate(b"1" + b" "+ self.fileHandler.srcFilePath.encode("ascii") + b" "
-                             + self.fileHandler.localFilePath.encode("ascii") + b"\r\n")
+                             + self.fileHandler.localFilePath.encode("ascii") + b"\n")
             if b"Falha no processamento do arquivo." in out:
                 raise dbException("Error at loading")
             if err:
@@ -100,8 +102,8 @@ class Database:
         proc = subprocess.Popen([self.exe],stdin=subprocess.PIPE, shell=True,
                                 stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         out, err = proc.communicate(b"6 "+ self.fileHandler.localFilePath.encode("ascii")+ b" "+
-                                     self.fileHandler.indexPath.encode("ascii") + b" 1\r\n" +
-                                     register.encode("ascii") + b"\r\n")
+                                     self.fileHandler.indexPath.encode("ascii") + b" 1\n" +
+                                     register.encode("ascii") + b"\n")
         if b"Falha no processamento do arquivo." in out:
                 raise dbException("Error at insertion")
         if err:
@@ -131,12 +133,12 @@ class Database:
                 s += f"{k} \"{v}\""
         s += "\n"
         log.debug(b"3 " +  self.fileHandler.localFilePath.encode("ascii")+ b" "+
-                                     self.fileHandler.indexPath.encode("ascii") + b" 1\r\n" +
+                                     self.fileHandler.indexPath.encode("ascii") + b" 1\n" +
                                      s.encode("ascii"))
         proc = subprocess.Popen([self.exe],stdin=subprocess.PIPE, shell=True,
                                 stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         out, err = proc.communicate(b"3 " +  self.fileHandler.localFilePath.encode("ascii")+ b" "+
-                                     self.fileHandler.indexPath.encode("ascii") + b" 1\r\n" +
+                                     self.fileHandler.indexPath.encode("ascii") + b" 1\n" +
                                      s.encode("ascii"))
         if b"Falha no processamento do arquivo." in out:
             raise dbException("Error at querying")
@@ -180,7 +182,7 @@ class Database:
         proc = subprocess.Popen([self.exe],stdin=subprocess.PIPE, shell=True,
                                 stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         out, err = proc.communicate(b"5 " +  self.fileHandler.localFilePath.encode("ascii")+ b" "+
-                                     self.fileHandler.indexPath.encode("ascii") + b" 1\r\n" +
+                                     self.fileHandler.indexPath.encode("ascii") + b" 1\n" +
                                      s.encode("ascii"))
         if b"Falha no processamento do arquivo." in out:
             raise dbException("Error at removing")
@@ -188,9 +190,10 @@ class Database:
             raise dbException(str(err))
 
     def returnAll(self) -> bytes:
+        log.debug(b"2 " + self.fileHandler.localFilePath.encode("ascii") + b"\n")
         proc = subprocess.Popen([self.exe],stdin=subprocess.PIPE, shell=True,
                                 stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        out, err = proc.communicate(b"2 " + self.fileHandler.localFilePath.encode("ascii") + b"\r\n")
+        out, err = proc.communicate(b"2 " + self.fileHandler.localFilePath.encode("ascii") + b"\n")
         if b"Falha no processamento do arquivo." in out:
             raise dbException("Error at querying")
         if err:
