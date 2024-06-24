@@ -2,7 +2,6 @@ import socket
 import threading
 import database
 import logging
-import subprocess
 from time import sleep
 
 #setup do log do servidor
@@ -32,8 +31,7 @@ class Server:
         self.address = address
         self.socket.bind(self.address)
         #Flag para sinalizar o fechamento de todas as conexoes
-        self.killFlag = False
-        
+        self.killFlag = False 
 
     #Metodo para iniciar operacao do servidor
     def run(self) -> None:
@@ -72,8 +70,7 @@ class Server:
 
                     #Encerramento das atividades
                     if task == "E":
-                        if db != None:
-                            db.close()
+                        db.close()
                         log.info("Closing Server normally")
                         raise closeServerException()
                     #Carregamento do arquivo (criacao do banco de dados)
