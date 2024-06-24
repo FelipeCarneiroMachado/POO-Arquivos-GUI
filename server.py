@@ -72,7 +72,8 @@ class Server:
 
                     #Encerramento das atividades
                     if task == "E":
-                        db.close()
+                        if db != None:
+                            db.close()
                         log.info("Closing Server normally")
                         raise closeServerException()
                     #Carregamento do arquivo (criacao do banco de dados)
