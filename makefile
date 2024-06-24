@@ -2,7 +2,7 @@ run_GUI:
 	javac GUI.java
 	java GUI.java
 
-run_server:
+run_server: sgbd
 	python3 server.py
 
 clean:

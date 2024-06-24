@@ -25,8 +25,9 @@ public class PlayerWindow extends JFrame {
         integerFormat.setGroupingUsed(false);
         NumberFormatter numberFormatter = new NumberFormatter(integerFormat);
         numberFormatter.setValueClass(Integer.class);
-        numberFormatter.setAllowsInvalid(true); // Allow temporarily invalid values for editing flexibility
-        numberFormatter.setMinimum(0); // Optional: Set minimum value as 0 if negative numbers are not valid
+        numberFormatter.setAllowsInvalid(true); // Important for editing flexibility
+        numberFormatter.setMinimum(0); // Optional: Set minimum value as 0
+        numberFormatter.setCommitsOnValidEdit(false); // Do not commit immediately on edit
 
         JFormattedTextField idTextField = new JFormattedTextField(numberFormatter);
         idTextField.setColumns(20);
@@ -40,20 +41,8 @@ public class PlayerWindow extends JFrame {
         JButton button = new JButton(action);
         button.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                try {
-                    idTextField.commitEdit();
-                    ageTextField.commitEdit();
-                } catch (ParseException ex) {
-                    JOptionPane.showMessageDialog(null, "ID e Idade devem ser números inteiros.", "Erro de Formatação", JOptionPane.ERROR_MESSAGE);
-                    idTextField.setValue(null);
-                    ageTextField.setValue(null);
-                    return;
-                }
-
-                Object idValue = idTextField.getValue();
-                Object ageValue = ageTextField.getValue();
-                String id = (idValue != null) ? idValue.toString() : "N/A";
-                String age = (ageValue != null) ? ageValue.toString() : "N/A";
+                String id = getValue(idTextField);
+                String age = getValue(ageTextField);
                 String name = nameTextField.getText().trim().toUpperCase();
                 String nationality = nationalityTextField.getText().trim().toUpperCase();
                 String club = clubTextField.getText().trim().toUpperCase();
@@ -114,6 +103,19 @@ public class PlayerWindow extends JFrame {
         pack();
         setLocationRelativeTo(null);
         setVisible(true);
+    }
+
+    private String getValue(JFormattedTextField textField) {
+        if (textField.getText().trim().isEmpty()) {
+            return "";
+        } else {
+            try {
+                textField.commitEdit(); // Force the field to commit the edit
+                return textField.getValue().toString(); // Return the value as string
+            } catch (ParseException ex) {
+                return ""; // In case of parse exception, return empty string
+            }
+        }
     }
 
     public static void main(String[] args) {

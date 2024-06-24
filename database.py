@@ -50,11 +50,13 @@ class dbException(Exception):
     pass
 
 
+#Classe responsavel pela comunicacao com o banco de dados em C
 class Database:
     def __init__(self, filePath : str) -> None:
         self.fileHandler = FileHandler(filePath)
         self.os = sys.platform
         self.csv = filePath.split(".")[-1] == "csv"
+        #Se for csv, gera binario, caso contrario, copia o binario
         if self.csv:
             proc = subprocess.Popen(["./sgbd"],stdin=subprocess.PIPE, 
                                 stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -79,8 +81,9 @@ class Database:
 
         
     
-
+    #insercao
     def insert(self, register : str) -> None:
+        #caso ja exista um registro com o mesmo id, o remove (caso de update)
         self.remove(self.decodeQuery(register))
         logStr = (b"6 "+ self.fileHandler.localFilePath.encode("ascii")+ b" "+
                                      self.fileHandler.indexPath.encode("ascii") + b" 1\n" +
@@ -96,6 +99,7 @@ class Database:
         if err:
             raise dbException(str(err))
         
+    #salva as alteracoes no arquivo original
     def save(self) -> None:
         log.info("Files saved")
         if self.csv:
@@ -109,7 +113,7 @@ class Database:
                
         
 
-
+    #busca por campos
     def query(self, query : dict) -> bytes:
         s = f"{len(query.keys())}"
         for k, v in query.items():
@@ -133,11 +137,13 @@ class Database:
             raise dbException(str(err))
         return out.rstrip(b"|")
     
-
+    #decodificacao da query, facilita seu uso
     def decodeQuery(self, query : str) -> dict:
         fieldList = ["id", "idade", "nomeJogador", "nacionalidade", "nomeClube"]
         return {t[0]:t[1] for t in zip(fieldList, query.split(",")) if t[1] != ""}
 
+
+    #define comando
     def command(self, command : str, param : str = None) -> str | None:
         log.debug(f"Executing: {command} {param}")
         match command:

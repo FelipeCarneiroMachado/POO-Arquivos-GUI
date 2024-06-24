@@ -11,7 +11,7 @@ import subprocess
 #setup do log do servidor
 log = logging.getLogger(__name__)
 logging.basicConfig(filename="serverLog.log", level=logging.DEBUG)
-#iconstantes
+#constantes
 PORT = 5555
 IP = "127.0.0.1"
 ADDR = (IP, PORT)
@@ -36,10 +36,10 @@ class Server:
         self.socket.bind(self.address)
         #Flag para sinalizar o fechamento de todas as conexoes
         self.killFlag = False 
-        self.glob = glob,glob("*")
+        self.glob = glob.glob("*")
         if not "env" in self.glob:
             subprocess.Popen(["mkdir", "env"])
-        subprocess.Popen(["make", "all"], shell=True)
+        #subprocess.Popen(["make", "sgbd"], shell=True)
 
     #Metodo para iniciar operacao do servidor
     def run(self) -> None:
