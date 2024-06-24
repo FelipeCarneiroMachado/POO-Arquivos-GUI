@@ -65,7 +65,7 @@ class Database:
         if self.os == "linux":
             self.exe = "./sgbd"
         else:
-            self.exe = "start sgbd.exe"
+            self.exe = "sgbd.exe"
         self.csv = filePath.split(".")[-1] == "csv"
         if self.csv:
             proc = subprocess.Popen([self.exe],stdin=subprocess.PIPE, shell=True,
